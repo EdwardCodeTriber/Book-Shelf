@@ -27,3 +27,20 @@ app.post('/books', (req, res) => {
     books.push(newBook)
     res.status(201).json(newBook)
 })
+
+// PUT/PATCH details of an existing book 
+app.put('/books'), (req, res) =>{
+    if (!book){
+        return res.status(404).json({error: 'Book not found'})
+    }
+
+    const {title, author, publisher, publishedDate} = req.body;
+
+    // Validate fields
+    if (title) book.title = title;
+    if (author) book.author = author;
+    if (publisher) book.publisher = publisher;
+    if (publishedDate) book.publishedDate = publishedDate;
+
+    res.json(book);
+}

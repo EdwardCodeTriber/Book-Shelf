@@ -9,3 +9,10 @@ app.use(bodyParse.json())
 
 let books = [];
 
+
+// Routes
+// GET all books
+app.get('/books', (req, res) =>{
+    res.json(books)
+})
+

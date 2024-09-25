@@ -44,3 +44,8 @@ app.put('/books'), (req, res) =>{
 
     res.json(book);
 }
+
+// DELETE remove book from database
+app.delete('/books', (req, res) =>{
+    res.status(204).send();
+})

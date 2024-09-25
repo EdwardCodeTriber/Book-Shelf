@@ -17,6 +17,16 @@ app.get("/books", (req, res) => {
   res.json(books);
 });
 
+app.get("/books:isbn", (req, res) => {
+    const book = findBookByISBN(req.params.isbn)
+   if (book){
+    res.json(book)
+   } else{
+    res.json(404).json({error: 'Book not found'})
+   }
+  
+});
+
 // POST method to add a new Book
 app.post("/books", (req, res) => {
   const { title, auther, publisher, publishedDate, isbn } = req.body;
@@ -24,14 +34,19 @@ app.post("/books", (req, res) => {
   if (!title || !author || !publisher || !publishedDate || !isbn) {
     return res.status(400).json({ error: "All fields must be filled" });
   }
+
+  if (findBookByISBN){
+    return res.status(400).json({error: 'Book already exists'})
+  }
   const newBook = { title, author, publisher, publishedDate, isbn };
   books.push(newBook);
   res.status(201).json(newBook);
 });
 
 // PUT/PATCH details of an existing book
-app.put("/books"),
+app.put("/books:isbn"),
   (req, res) => {
+    const book = findBookByISBN(req.params.isbn)
     if (!book) {
       return res.status(404).json({ error: "Book not found" });
     }

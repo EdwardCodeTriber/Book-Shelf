@@ -18,13 +18,12 @@ app.get("/books", (req, res) => {
 });
 
 app.get("/books:isbn", (req, res) => {
-    const book = findBookByISBN(req.params.isbn)
-   if (book){
-    res.json(book)
-   } else{
-    res.json(404).json({error: 'Book not found'})
-   }
-  
+  const book = findBookByISBN(req.params.isbn);
+  if (book) {
+    res.json(book);
+  } else {
+    res.json(404).json({ error: "Book not found" });
+  }
 });
 
 // POST method to add a new Book
@@ -35,8 +34,8 @@ app.post("/books", (req, res) => {
     return res.status(400).json({ error: "All fields must be filled" });
   }
 
-  if (findBookByISBN){
-    return res.status(400).json({error: 'Book already exists'})
+  if (findBookByISBN) {
+    return res.status(400).json({ error: "Book already exists" });
   }
   const newBook = { title, author, publisher, publishedDate, isbn };
   books.push(newBook);
@@ -46,7 +45,7 @@ app.post("/books", (req, res) => {
 // PUT/PATCH details of an existing book
 app.put("/books:isbn"),
   (req, res) => {
-    const book = findBookByISBN(req.params.isbn)
+    const book = findBookByISBN(req.params.isbn);
     if (!book) {
       return res.status(404).json({ error: "Book not found" });
     }
@@ -63,6 +62,23 @@ app.put("/books:isbn"),
   };
 
 // DELETE remove book from database
-app.delete("/books", (req, res) => {
+app.delete("/books:isbn", (req, res) => {
+  const bookIndex = books.findIndex((book) => book.isbn === req.params.isbn);
+  if (bookIndex === -1) {
+    return res.status(404).json({ error: "book not found" });
+  }
+
+  books.splice(bookIndex, 1);
   res.status(204).send();
+});
+
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something went wrong" });
+});
+
+// Start server
+app.listern(port, () => {
+  console.log(`Book directory API is running on http://localhost:${port}`);
 });

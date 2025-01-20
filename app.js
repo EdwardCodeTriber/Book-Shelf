@@ -1,11 +1,12 @@
 const express = require("express");
-const bodyParse = require("body-parse");
+const bodyParse = require("body-parser");
 const port = 3000;
+
+const app = express();
 
 app.use(bodyParse.json());
 
 // Data storage
-
 let books = [];
 
 // Function to find book
@@ -17,55 +18,55 @@ app.get("/books", (req, res) => {
   res.json(books);
 });
 
-app.get("/books:isbn", (req, res) => {
+app.get("/books/:isbn", (req, res) => {
   const book = findBookByISBN(req.params.isbn);
   if (book) {
     res.json(book);
   } else {
-    res.json(404).json({ error: "Book not found" });
+    res.status(404).json({ error: "Book not found" });
   }
 });
 
 // POST method to add a new Book
 app.post("/books", (req, res) => {
-  const { title, auther, publisher, publishedDate, isbn } = req.body;
+  const { title, author, publisher, publishedDate, isbn } = req.body;
 
   if (!title || !author || !publisher || !publishedDate || !isbn) {
     return res.status(400).json({ error: "All fields must be filled" });
   }
 
-  if (findBookByISBN) {
+  if (findBookByISBN(isbn)) {
     return res.status(400).json({ error: "Book already exists" });
   }
+  
   const newBook = { title, author, publisher, publishedDate, isbn };
   books.push(newBook);
   res.status(201).json(newBook);
 });
 
 // PUT/PATCH details of an existing book
-app.put("/books:isbn"),
-  (req, res) => {
-    const book = findBookByISBN(req.params.isbn);
-    if (!book) {
-      return res.status(404).json({ error: "Book not found" });
-    }
+app.put("/books/:isbn", (req, res) => {
+  const book = findBookByISBN(req.params.isbn);
+  if (!book) {
+    return res.status(404).json({ error: "Book not found" });
+  }
 
-    const { title, author, publisher, publishedDate } = req.body;
+  const { title, author, publisher, publishedDate } = req.body;
 
-    // Validate fields
-    if (title) book.title = title;
-    if (author) book.author = author;
-    if (publisher) book.publisher = publisher;
-    if (publishedDate) book.publishedDate = publishedDate;
+  // Validate fields
+  if (title) book.title = title;
+  if (author) book.author = author;
+  if (publisher) book.publisher = publisher;
+  if (publishedDate) book.publishedDate = publishedDate;
 
-    res.json(book);
-  };
+  res.json(book);
+});
 
 // DELETE remove book from database
-app.delete("/books:isbn", (req, res) => {
+app.delete("/books/:isbn", (req, res) => {
   const bookIndex = books.findIndex((book) => book.isbn === req.params.isbn);
   if (bookIndex === -1) {
-    return res.status(404).json({ error: "book not found" });
+    return res.status(404).json({ error: "Book not found" });
   }
 
   books.splice(bookIndex, 1);
@@ -79,6 +80,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listern(port, () => {
+app.listen(port, () => {
   console.log(`Book directory API is running on http://localhost:${port}`);
 });

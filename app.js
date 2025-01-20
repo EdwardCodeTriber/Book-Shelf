@@ -70,7 +70,11 @@ app.delete("/books/:isbn", (req, res) => {
   }
 
   books.splice(bookIndex, 1);
-  res.status(204).send();
+  // res.status(204).send();
+  res.status(200).json({
+    message: "Book deleted successfully {^_^}",
+    deletedBook: bookIndex
+  });
 });
 
 // Error handling
